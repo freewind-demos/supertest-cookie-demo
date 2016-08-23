@@ -18,32 +18,15 @@ describe('express application', () => {
       .expect(200, 'Hello, world!', finish(done));
   });
 
-  it('/hello/:name', (done) => {
+  it('send cookie to server', (done) => {
     request(app)
-      .get('/hello/Freewind')
-      .expect(200, 'Hello, Freewind', finish(done));
+      .get('/set-cookie')
+      .set('Cookie', 'token1=111111;token2=222222')
+      .expect(200, {
+        token1: '111111',
+        token2: '222222'
+      }, finish(done));
   });
 
-  describe('save', ()=> {
-    beforeEach((done)=> {
-      request(app).del('/saved').expect(204, finish(done));
-    });
-
-    it('/save', (done) => {
-      request(app)
-        .post('/save')
-        .send({name: 'Freewind'})
-        .expect('Content-Type', /json/)
-        .expect(201, {name: 'Freewind'}, finish(done));
-    });
-
-    it('/saved', (done) => {
-      async.series([
-        (cb) => request(app).post('/save').send({name: 'Freewind'}).expect(201, cb),
-        (cb) => request(app).post('/save').send({name: 'Lily'}).expect(201, cb),
-        (cb) => request(app).get('/saved').expect(200, [{name: 'Freewind'}, {name: 'Lily'}], cb)
-      ], finish(done));
-    })
-  });
 
 });
